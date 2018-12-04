@@ -14,17 +14,23 @@ extern Adafruit_PWMServoDriver servo_pwm;
 class MyServo {
 	public:
 
-		MyServo(unsigned char id) {
+		MyServo(unsigned char id, unsigned short max, unsigned short min, float arc, bool direction) {
 			my_id = id;
+			my_max = max;
+			my_min = min;
+			my_arc = arc;
+			my_direction = direction;
+			degree_pw = (my_max - my_min) / my_arc;
 			goal_pw = 0;
 			next_pw = 0;
 			curr_pw = 0;
-			Serial.println("Default servo created.");
+			Serial.println("Servo created.");
 		}
 
 		void heartbeat();
 
 		void setGoal(unsigned short);
+		void setGoalAngle(float);
 		void calcNext();
 		void sendNext();
 
@@ -32,9 +38,17 @@ class MyServo {
 		unsigned short getNext();
 		unsigned short getCurr();
 
+
 	private:
 		unsigned short my_id;
+		unsigned short my_max;
+		unsigned short my_min;
+		float my_arc; // total movement range in degrees
+		bool my_direction;
+		
+		float degree_pw;
 
+		float goal_angle;
 		unsigned short goal_pw;
 		unsigned short next_pw;
 		unsigned short curr_pw;

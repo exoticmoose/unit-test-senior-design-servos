@@ -4,5 +4,5 @@
 #define BACK_ZERO_PW 770		// Hitec Servo low/zero pulsewidth
 #define BACK_FULL_PW 2250		// Hitec Servo high/full pulsewidth
 
-#define BIG_STEP 100
+#define BIG_STEP 50
 #define SMALL_STEP 10
