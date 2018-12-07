@@ -16,13 +16,14 @@ void MyServo::calcNext() {
 			if (curr_pw != goal_pw) {
 				// If undershooting goal, move closer by BIG_STEP until starting to move by 10 when close
 				if (curr_pw < goal_pw) {
-					if (curr_pw + BIG_STEP < goal_pw) {
-						next_pw = curr_pw + BIG_STEP;
-					} else next_pw = curr_pw + SMALL_STEP;
+					if (curr_pw + BIG_STEP < goal_pw) next_pw = curr_pw + BIG_STEP;
+					else if (curr_pw + SMALL_STEP < goal_pw) next_pw = curr_pw + SMALL_STEP;
+					else next_pw = goal_pw;
 				}
 				else if (curr_pw > goal_pw) {
 					if (curr_pw - BIG_STEP > goal_pw) next_pw = curr_pw - BIG_STEP;
-					else next_pw = curr_pw - SMALL_STEP;
+					else if (curr_pw - SMALL_STEP > goal_pw) next_pw = curr_pw - SMALL_STEP;
+					else next_pw = goal_pw;
 				}
 				else {
 					// - - - - - - -

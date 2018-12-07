@@ -14,6 +14,9 @@
 
 // Borrowed Libraries
 #include <Adafruit_PWMServoDriver.h>
+#include <Adafruit_MotorShield.h>
+#include "utility/Adafruit_MS_PWMServoDriver.h"
+
 #include <MPU6050.cpp>
 #include <I2Cdev.cpp>
 
@@ -40,27 +43,34 @@ MyServo servo_rr = MyServo(6, 2250, 1250, 90, 1);
 
 void serialEvent() {
 	Serial.print("SE - ");
-	long tmp = Serial.parseInt();
-	Serial.print("got: ");
-	Serial.println(tmp);
+	long addr = Serial.parseInt();
+	long angle= Serial.parseInt();
 
-	if (tmp == 11) {
-		Serial.println(servo_fl.getGoal());
-	}
-	else if (tmp == 22) {
-		Serial.println(servo_fl.getCurr());
-	}
-	else if (tmp == 33) {
-		Serial.println(servo_fl.getNext());
-	}
-	else if (tmp == 99) {
-		servo_fl.calcNext();
-	}
-	else {
-		servo_fl.setGoalAngle(tmp);
-		servo_rl.setGoalAngle(tmp);
-		servo_fr.setGoalAngle(tmp);
-		servo_rr.setGoalAngle(tmp);
+
+	Serial.print("got: ");
+	Serial.print(addr); Serial.print(" @ ");
+	Serial.println(angle);
+
+	switch (addr) {
+		case 0:
+			servo_fl.setGoalAngle(angle);
+			break;
+		case 2:
+			servo_fr.setGoalAngle(angle);
+			break;
+		case 4:
+			servo_rl.setGoalAngle(angle);
+			break;
+		case 6:
+			servo_rr.setGoalAngle(angle);
+			break;
+
+		case -1:
+			servo_fl.setGoalAngle(angle);
+			servo_rl.setGoalAngle(angle);
+			servo_fr.setGoalAngle(angle);
+			servo_rr.setGoalAngle(angle);
+			break;
 	}
 }
 
@@ -85,38 +95,8 @@ void setup() {
     Serial.println("Testing device connections...");
     Serial.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
 		
-	uint8_t tmp_x = accelgyro.getAccelXSelfTestFactoryTrim();
-	uint8_t tmp_y = accelgyro.getAccelYSelfTestFactoryTrim();
-	uint8_t tmp_z = accelgyro.getAccelZSelfTestFactoryTrim();
-	Serial.println(tmp_x);
-	Serial.println(tmp_y);
-	Serial.println(tmp_z);
 
 
-	Serial.println("Updating internal sensor offsets...");
-    // -76	-2359	1688	0	0	0
-    Serial.print(accelgyro.getXAccelOffset()); Serial.print("\t"); // -76
-    Serial.print(accelgyro.getYAccelOffset()); Serial.print("\t"); // -2359
-    Serial.print(accelgyro.getZAccelOffset()); Serial.print("\t"); // 1688
-    Serial.print(accelgyro.getXGyroOffset()); Serial.print("\t"); // 0
-    Serial.print(accelgyro.getYGyroOffset()); Serial.print("\t"); // 0
-    Serial.print(accelgyro.getZGyroOffset()); Serial.print("\t"); // 0
-    Serial.print("\n");
-
-
-    accelgyro.setXAccelOffset(-580);
-    accelgyro.setYAccelOffset(470);
-    accelgyro.setZAccelOffset(-260);
-    accelgyro.setXGyroOffset(0);
-    accelgyro.setYGyroOffset(-0);
-    accelgyro.setZGyroOffset(0);
-
-    Serial.print(accelgyro.getXAccelOffset()); Serial.print("\t"); // -76
-    Serial.print(accelgyro.getYAccelOffset()); Serial.print("\t"); // -2359
-    Serial.print(accelgyro.getZAccelOffset()); Serial.print("\t"); // 1688
-    Serial.print(accelgyro.getXGyroOffset()); Serial.print("\t"); // 0
-    Serial.print(accelgyro.getYGyroOffset()); Serial.print("\t"); // 0
-    Serial.print(accelgyro.getZGyroOffset()); Serial.print("\t"); // 0
     Serial.print("\n");
 	// save I2C bitrate
 	//uint8_t twbrbackup = TWBR;
@@ -148,10 +128,10 @@ void loop() {
 	angle_y = abs(ay / (float)20000 * 90);
 	//Serial.println(angle_y);
 
-	servo_fl.setGoalAngle(angle_x);
-	servo_rl.setGoalAngle(angle_y);
-	servo_fr.setGoalAngle(angle_x);
-	servo_rr.setGoalAngle(angle_y);
+	// servo_fl.setGoalAngle(angle_x);
+	// servo_rl.setGoalAngle(angle_y);
+	// servo_fr.setGoalAngle(angle_x);
+	// servo_rr.setGoalAngle(angle_y);
 
 
 	servo_fl.calcNext();
